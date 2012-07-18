@@ -277,6 +277,11 @@
 #define I2C_OAR1_ADDMODE        0x00008000
 
 //
+//! Res. must be configured and kept at 1
+//
+#define I2C_OAR1_RES            0x00004000
+
+//
 //! Interface address mask
 //
 #define I2C_OAR1_ADD98_M        0x00000300  

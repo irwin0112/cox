@@ -69,6 +69,8 @@ static xtEventCallback g_pfnSPIHandlerCallbacks[3]={0};
 void 
 SPI1IntHandler(void)
 {
+	  unsigned long ulEventFlags;
+	
     //
     // Call Callback function
     //
@@ -94,6 +96,8 @@ SPI1IntHandler(void)
 void 
 SPI2IntHandler(void)
 {
+	  unsigned long ulEventFlags;
+	
     //
     // Call Callback function
     //
@@ -119,6 +123,8 @@ SPI2IntHandler(void)
 void 
 SPI3IntHandler(void)
 {
+	  unsigned long ulEventFlags;
+	
     //
     // Call Callback function
     //
@@ -126,6 +132,50 @@ SPI3IntHandler(void)
     {
         g_pfnSPIHandlerCallbacks[2](0, 0, ulEventFlags, 0);
     }
+}
+
+//*****************************************************************************
+//
+//! \brief Set the slave select pins of the specified SPI port.
+//!
+//! \param ulBase specifies the SPI module base address.
+//! \param ulSSMode specifies the SS is hardware control or software control.
+//! \param ulSlaveSel specifies the slave select pins which will be used.
+//!
+//! The \e ulSSMode can be one of the following values:
+//! \b SPI_SS_HARDWARE, \b SPI_SS_SOFTWARE.
+//!
+//! The \e ulSlaveSel can be one of the following values:
+//! \b xSPI_SS0.(only used in SPI_SS_HARDWARE mode)
+//! 
+//!
+//! \return None.
+//
+//*****************************************************************************
+void xSPISSSet(unsigned long ulBase, unsigned long ulSSMode, 
+                      unsigned long ulSlaveSel)
+{
+    //
+    // Check the arguments.
+    //
+    xASSERT((ulBase == SPI3_BASE) || (ulBase == SPI1_BASE)||
+            (ulBase == SPI2_BASE));
+    xASSERT((ulSSMode == SPI_SS_HARDWARE) || (ulSSMode == SPI_SS_SOFTWARE));
+    xASSERT((ulSlaveSel == xSPI_SS0));
+    
+    xHWREG(ulBase + SPI_CR1) &= ~SPI_CR1_SSM;
+    xHWREG(ulBase + SPI_CR1) |= ulSSMode;
+	
+		if(ulSSMode == SPI_SS_HARDWARE)
+		{
+			  xHWREG(ulBase + SPI_CR1) &= ~SPI_CR1_SSM;
+        xHWREG(ulBase + SPI_CR2) |= SPI_CR2_SSOE;
+    }
+		else if(ulSSMode == SPI_SS_SOFTWARE)
+		{
+			  xHWREG(ulBase + SPI_CR1) |= SPI_CR1_SSM;
+				xHWREG(ulBase + SPI_CR1) |= SPI_CR1_SSI;
+		}
 }
 
 //*****************************************************************************
@@ -167,8 +217,7 @@ SPI3IntHandler(void)
 //! - 0 !=  bit rate (master mode)
 //!
 //! The width of the data transfers can be a value between 1 and 32, inclusive.
-//! It can be one of the following values: \b SPI_DATA_WIDTH1,\b SPI_DATA_WIDTH2
-//! \b SPI_DATA_WIDTH8,\b SPI_DATA_WIDTH16.
+//! It can be one of the following values: \b SPI_DATA_WIDTH8, \b SPI_DATA_WIDTH16.
 //! 
 //! The first bit of the data transfers, can be one of the following values:
 //! \b SPI_MSB_FIRST, or \b SPI_LSB_FIRST.
@@ -210,6 +259,7 @@ SPIConfig(unsigned long ulBase, unsigned long ulBitRate,
     //
     // Set the mode.
     //
+    xHWREG(ulBase + SPI_CR1) &= ~0x00000087;
     xHWREG(ulBase + SPI_CR1) |= ulConfig;
 
     //
@@ -293,19 +343,27 @@ SPISingleDataReadWrite(unsigned long ulBase, unsigned long ulWData)
     //
     // Wait until SPI is not busy,data to be write.
     //
+
     while((xHWREG(ulBase + SPI_SR) & SPI_SR_BSY))
     {
     }
+	/*	
+    while(!(xHWREG(ulBase + SPI_SR) & SPI_SR_TXE))
+    {
+    }	
+   */ 		
     xHWREG(ulBase + SPI_DR) = ulWData;
     
     //
     // Wait until there is data to be read.
     //
-    
     while((xHWREG(ulBase + SPI_SR) & SPI_SR_BSY))
     {
     }
-    
+    while(!(xHWREG(ulBase + SPI_SR) & SPI_SR_RXNE))
+    {
+    } 
+		
     //
     // write data to SPI.
     //
@@ -328,7 +386,7 @@ SPISingleDataReadWrite(unsigned long ulBase, unsigned long ulWData)
 //!
 //! \note Only the lower N bits of the value written to \e pulData contain
 //! valid data, where N is the data width as configured by
-//! SSIConfigSetExpClk().  For example, if the interface is configured for
+//! SPIConfig().  For example, if the interface is configured for
 //! 8-bit data width, only the lower 8 bits of the value written to \e pulData
 //! contain valid data.
 //!
@@ -453,7 +511,7 @@ SPIDataPut(unsigned long ulBase, unsigned long ulData)
 //! returns a zero.
 //!
 //! This function replaces the original SSIDataNonBlockingPut() API and
-//! performs the same actions.  A macro is provided in <tt>ssi.h</tt> to map
+//! performs the same actions.  A macro is provided in <tt>SPI.h</tt> to map
 //! the original API to this API.
 //!
 //! \return Returns the number of elements written to the SSI transmit FIFO.
@@ -511,7 +569,7 @@ SPIDataGet(unsigned long ulBase, unsigned long *pulData)
     //
     while(!(xHWREG(ulBase + SPI_SR) & SPI_SR_RXNE))
     {
-    }
+    } 
 
     //
     // Read data from SSI.
@@ -540,7 +598,7 @@ SPIDataGet(unsigned long ulBase, unsigned long *pulData)
 //
 //*****************************************************************************
 long
-SSIDataGetNonBlocking(unsigned long ulBase, unsigned long *pulData)
+SPIDataGetNonBlocking(unsigned long ulBase, unsigned long *pulData)
 {
     //
     // Check the arguments.
@@ -805,7 +863,7 @@ SPIEnble(unsigned long ulBase)
     xASSERT((ulBase == SPI3_BASE) || (ulBase == SPI1_BASE)||
             (ulBase == SPI2_BASE));
 
-    xHWREG(ulBase + SPI_CR2) |= SPI_CR1_SPE;
+    xHWREG(ulBase + SPI_CR1) |= SPI_CR1_SPE;
 }
 
 //*****************************************************************************
@@ -833,20 +891,13 @@ SPIDisble(unsigned long ulBase)
 
 //*****************************************************************************
 //
-//! \brief Set the slave select pins of the specified SPI port.
+//! \brief Set or Clear the internal software SSI bit of the specified SPI port.
 //!
 //! \param ulBase specifies the SPI module base address.
-//! \param ulSSMode specifies the SS is hardware control or software control.
-//! \param ulSlaveSel specifies the slave select pins which will be used.
+//! \param ulSSI specifies the SSI bit value.
 //!
-//! This function is to Set the slave select pins of the 
-//! specified SPI port.
-//!
-//! The \e ulSSMode can be one of the following values:
-//! \b SPI_SS_HARDWARE, \b SPI_SS_SOFTWARE.
-//!
-//! The \e ulSlaveSel can be one of the following values:
-//! \b xSPI_SS0
+//! The \e ulSSI can be one of the following values:
+//! \b SPI_SSSET, \b SPI_SSRESET.
 //!
 //! \note this is only for master
 //!
@@ -854,18 +905,47 @@ SPIDisble(unsigned long ulBase)
 //
 //*****************************************************************************
 void 
-SPISSSet(unsigned long ulBase, unsigned long ulSSMode, 
-         unsigned long ulSlaveSel)
+SPISSIConfig(unsigned long ulBase, unsigned long ulSSI)
 {
     //
     // Check the arguments.
     //
     xASSERT((ulBase == SPI3_BASE) || (ulBase == SPI1_BASE)||
             (ulBase == SPI2_BASE));
-    xASSERT((ulSlaveSel == SPI_SS0));
+    xASSERT((ulSSI == SPI_SSSET) || (ulSSI == SPI_SSRESET));
     
-    xHWREG(ulBase + SPI_CR1) &= ~SPI_CR1_SSM;
-    xHWREG(ulBase + SPI_CR1) |= ulSSMode;
+    xHWREG(ulBase + SPI_CR1) &= ~SPI_CR1_SSI;
+    xHWREG(ulBase + SPI_CR1) |= ulSSI;
+}
+
+//*****************************************************************************
+//
+//! \brief Enables or disables the SS output for the selected SPI port.
+//!
+//! \param ulBase specifies the SPI module base address.
+//! \param ulSSOutPut new state of the SPIx SS output. 
+//!
+//! The \e ulSSI can be one of the following values:
+//! \b SPI_SSOE_ENABLE, \b SPI_SSOE_DISABLE.
+//!
+//! \note this is only for master
+//!
+//! \return None.
+//
+//*****************************************************************************
+void 
+SPISSOutputConfig(unsigned long ulBase, unsigned long ulSSOutPut)
+{
+	  //
+    // Check the arguments.
+    //
+    xASSERT((ulBase == SPI3_BASE) || (ulBase == SPI1_BASE)||
+            (ulBase == SPI2_BASE));
+    xASSERT((ulSSOutPut == SPI_SSOE_ENABLE) ||
+	          (ulSSOutPut == SPI_SSOE_DISABLE)); 
+	
+    xHWREG(ulBase + SPI_CR2) &= ~SPI_CR2_SSOE;
+    xHWREG(ulBase + SPI_CR2) |= ulSSOutPut;
 }
 
 //*****************************************************************************
@@ -876,19 +956,14 @@ SPISSSet(unsigned long ulBase, unsigned long ulSSMode,
 //! \param ulSSMode specifies the SS is hardware control or software control.
 //! \param ulSlaveSel specifies the slave select pins which will be used.
 //!
-//! This function is to Set the slave select pins of the 
-//! specified SPI port.
-//!
-//! The \e ulSSValue can be one of the following values:
-//! \b SPI_SSSET, \b SPI_SSRESET.
-//!
-//! \note this is only for master
+//! The \e ulSSMode can be one of the following values:
+//! \b SPI_SS_HARDWARE, \b SPI_SS_SOFTWARE.
 //!
 //! \return None.
 //
 //*****************************************************************************
 void 
-SPISSConfig(unsigned long ulBase, unsigned long ulSSValue)
+SPISSModeConfig(unsigned long ulBase, unsigned long ulSSMode)
 {
     //
     // Check the arguments.
@@ -896,8 +971,8 @@ SPISSConfig(unsigned long ulBase, unsigned long ulSSValue)
     xASSERT((ulBase == SPI3_BASE) || (ulBase == SPI1_BASE)||
             (ulBase == SPI2_BASE));
     
-    xHWREG(ulBase + SPI_CR1) &= ~SPI_CR1_SSI;
-    xHWREG(ulBase + SPI_CR1) |= ulSSValue;
+    xHWREG(ulBase + SPI_CR1) &= ~SPI_CR1_SSM;
+    xHWREG(ulBase + SPI_CR1) |= ulSSMode;
 }
 
 //*****************************************************************************
@@ -1007,7 +1082,7 @@ SPICRCPolGet(unsigned long ulBase)
 //
 //*****************************************************************************
 unsigned long
-SPICRCPolGet(unsigned long ulBase)
+SPITXCRCGet(unsigned long ulBase)
 {
     //
     // Check the arguments.
@@ -1064,7 +1139,7 @@ SPICRCEnble(unsigned long ulBase)
     xASSERT((ulBase == SPI3_BASE) || (ulBase == SPI1_BASE)||
             (ulBase == SPI2_BASE));
 
-    xHWREG(ulBase + SPI_CR2) |= SPI_CR1_CRCEN;
+    xHWREG(ulBase + SPI_CR1) |= SPI_CR1_CRCEN;
 }
 
 //*****************************************************************************
@@ -1088,5 +1163,5 @@ SPICRCDisble(unsigned long ulBase)
     xASSERT((ulBase == SPI3_BASE) || (ulBase == SPI1_BASE)||
             (ulBase == SPI2_BASE));
 
-    xHWREG(ulBase + SPI_CR2) &= ~SPI_CR1_CRCEN;
+    xHWREG(ulBase + SPI_CR1) &= ~SPI_CR1_CRCEN;
 }

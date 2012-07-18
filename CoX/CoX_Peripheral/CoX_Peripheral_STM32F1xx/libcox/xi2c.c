@@ -72,7 +72,7 @@ static xtEventCallback g_pfnI2CHandlerCallbacks[2]={0};
 //! \return value of I2C status register after generate a start condition.
 //
 //*****************************************************************************
-static unsigned long I2CStartSend (unsigned long ulBase)
+unsigned long I2CStartSend (unsigned long ulBase)
 {
     //
     // Check the arguments.
@@ -105,7 +105,7 @@ static unsigned long I2CStartSend (unsigned long ulBase)
 //! \return None.
 //
 //*****************************************************************************
-static void I2CStopSend (unsigned long ulBase)
+void I2CStopSend (unsigned long ulBase)
 {
     //
     // Check the arguments.
@@ -133,7 +133,7 @@ static void I2CStopSend (unsigned long ulBase)
 //! \return value of I2C status register after send a byte.
 //
 //*****************************************************************************
-static unsigned long I2CByteSend (unsigned long ulBase, unsigned char ucData)
+unsigned long I2CByteSend (unsigned long ulBase, unsigned char ucData)
 {
     //
     // Check the arguments.
@@ -470,7 +470,10 @@ I2CMasterInit(unsigned long ulBase, unsigned long ulI2CClk,
         xHWREG(ulBase + I2C_CCR) = ulCCR;
         xHWREG(ulBase + I2C_TRISE) = ulTRISE + 1;
     }
+    
     I2CEnable(ulBase);
+    xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
+    xHWREG(ulBase + I2C_OAR1) = I2C_OAR1_RES |0xA0;
 }
 
 //*****************************************************************************
@@ -857,6 +860,27 @@ I2CNACKPositionConfig(unsigned long ulBase, unsigned long ulNACKPosition)
     xHWREG(ulBase + I2C_CR1) |= ulNACKPosition;
 }
 
+//*****************************************************************************
+//
+//! Enables the specified I2C acknowledge feature.
+//!
+//! \param ulBase is the base address of the I2C module.
+//!
+//! This will Enables the specified I2C acknowledge feature.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void 
+I2CAcknowledgeEnable(unsigned long ulBase)
+{
+    //
+    // Check the arguments.
+    //
+    xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C2_BASE));
+
+    xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
+}
 //*****************************************************************************
 //
 //! Selects the specified I2C PEC position.
@@ -1747,7 +1771,7 @@ I2CMasterReadRequestS1(unsigned long ulBase, unsigned char ucSlaveAddr,
     //    ulStatus = xHWREG(ulBase + I2C_SR2);
     //}while((ulStatus & I2C_SR2_BUSY));
     
-    xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
+    //xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
     
     //
     // Send start

@@ -29,7 +29,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>16</version>
+          <version>17</version>
           <state>37</state>
         </option>
         <option>
@@ -91,7 +91,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>5.50.0.51907</state>
+          <state>5.50.6.52043</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -103,7 +103,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>STM32F10xxB	ST STM32F10xxB</state>
+          <state>STM32F107xC	ST STM32F107xC</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -146,7 +146,7 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>ewarm</state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -615,7 +615,7 @@
         </option>
         <option>
           <name>IlinkMapFile</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkLogFile</name>
@@ -643,7 +643,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\generic_cortex.icf</state>
+          <state>lnk0t.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -703,7 +703,7 @@
         </option>
         <option>
           <name>IlinkProgramEntryLabel</name>
-          <state>__iar_program_start</state>
+          <state></state>
         </option>
         <option>
           <name>DoFill</name>
@@ -844,7 +844,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>16</version>
+          <version>17</version>
           <state>0</state>
         </option>
         <option>
@@ -898,7 +898,7 @@
         </option>
         <option>
           <name>RTConfigPath</name>
-          <state>$TOOLKIT_DIR$\INC\DLib_Config_Normal.h</state>
+          <state>dl-stnl0.a</state>
         </option>
         <option>
           <name>OGProductVersion</name>
@@ -1074,7 +1074,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state>$FILE_BNAME$.o</state>
+          <state></state>
         </option>
         <option>
           <name>CCLangSelect</name>
@@ -1094,9 +1094,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$/../../../../../../../../CoX\CoX_Peripheral\CoX_Peripheral_NUC1xx\libcox</state>
-          <state>$PROJ_DIR$/../../../../../../../../CoX\CoX_Peripheral\CoX_Peripheral_NUC1xx\testframe</state>
-          <state>$PROJ_DIR$/../../../../../../../../CoX\CoX_Peripheral\CoX_Peripheral_NUC1xx\sysctl\test\suite1\src</state>
+          <state></state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1104,7 +1102,7 @@
         </option>
         <option>
           <name>CCStdIncludePath</name>
-          <state>$TOOLKIT_DIR$\INC\</state>
+          <state>###Uninitialized###</state>
         </option>
         <option>
           <name>CCCodeSection</name>
@@ -1129,7 +1127,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>3</state>
+          <state>1</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -1285,7 +1283,7 @@
         </option>
         <option>
           <name>AOutputFile</name>
-          <state>$FILE_BNAME$.o</state>
+          <state></state>
         </option>
         <option>
           <name>AMultibyteSupport</name>
@@ -1393,7 +1391,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>template.out</state>
+          <state>###Unitialized###</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>

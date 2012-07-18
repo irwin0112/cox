@@ -29,8 +29,8 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>16</version>
-          <state>34</state>
+          <version>17</version>
+          <state>0</state>
         </option>
         <option>
           <name>GEndianMode</name>
@@ -43,7 +43,7 @@
         </option>
         <option>
           <name>Input description</name>
-          <state>Full formatting.</state>
+          <state></state>
         </option>
         <option>
           <name>Output variant</name>
@@ -52,7 +52,7 @@
         </option>
         <option>
           <name>Output description</name>
-          <state>Full formatting.</state>
+          <state></state>
         </option>
         <option>
           <name>GOutputBinary</name>
@@ -65,7 +65,7 @@
         </option>
         <option>
           <name>OGCoreOrChip</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>GRuntimeLibSelect</name>
@@ -79,7 +79,7 @@
         </option>
         <option>
           <name>RTDescription</name>
-          <state>Use the normal configuration of the C/C++ runtime library. No locale interface, C locale, no file descriptor support, no multibytes in printf and scanf, and no hex floats in strtod.</state>
+          <state></state>
         </option>
         <option>
           <name>RTConfigPath</name>
@@ -91,7 +91,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>5.50.0.51907</state>
+          <state></state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -103,7 +103,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>NUC140xE	Nuvoton NUC140xE</state>
+          <state></state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -111,7 +111,7 @@
         </option>
         <option>
           <name>GEndianModeBE</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>OGBufferedTerminalOutput</name>
@@ -146,7 +146,7 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>ewarm</state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -279,10 +279,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$/../../../../../../../CoX_Peripheral\CoX_Peripheral_NUC1xx\libcox</state>
-          <state>$PROJ_DIR$/../../../lib</state>
-          <state>$PROJ_DIR$/../src</state>
-          <state>$PROJ_DIR$/../../../../../../../resource\testframe</state>
+          <state></state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -579,7 +576,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>W25xxTest.out</state>
+          <state>suite1.nuc1xx.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -643,7 +640,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\generic_cortex.icf</state>
+          <state>lnk0t.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -703,7 +700,7 @@
         </option>
         <option>
           <name>IlinkProgramEntryLabel</name>
-          <state>__iar_program_start</state>
+          <state></state>
         </option>
         <option>
           <name>DoFill</name>
@@ -844,7 +841,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>16</version>
+          <version>17</version>
           <state>0</state>
         </option>
         <option>

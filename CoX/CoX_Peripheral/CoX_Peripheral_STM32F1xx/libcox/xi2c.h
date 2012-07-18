@@ -297,8 +297,8 @@
         do                                                                    \
         {                                                                     \
             xASSERT(ulI2CClk == 100000 || ulI2CClk == 400000);                \
-            I2CMasterInitExpClk(ulBase, SysCtlClockGet(),                     \
-                (ulI2CClk == 400000) ? xtrue : xfalse);                       \
+            I2CMasterInit(ulBase, SysCtlAPB1ClockGet(),                       \
+                (ulI2CClk == 400000) ? xtrue : xfalse, xtrue);                \
         }while(0)
 
 
@@ -314,7 +314,7 @@
 //
 //*****************************************************************************
 #define xI2CMasterEnable(ulBase)                                              \
-        I2CMasterEnable(ulBase)
+        I2CEnable(ulBase)
 
 //*****************************************************************************
 //
@@ -1411,6 +1411,10 @@
 //! @{
 //
 //*****************************************************************************
+extern unsigned long I2CStartSend (unsigned long ulBase);
+extern void I2CStopSend (unsigned long ulBase);
+extern unsigned long I2CByteSend (unsigned long ulBase, unsigned char ucData);
+extern void I2CAcknowledgeEnable(unsigned long ulBase);
 extern void I2CMasterInit(unsigned long ulBase, unsigned long ulI2CClk,
                           xtBoolean bFast, xtBoolean bDutyCycle);
 extern void I2CSlaveInit(unsigned long ulBase, unsigned long ulAddrConfig, 

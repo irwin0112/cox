@@ -273,6 +273,8 @@ extern "C"
 #define xSYSCTL_XTAL_14MHZ      SYSCTL_XTAL_14MHZ
 #define xSYSCTL_XTAL_15MHZ      SYSCTL_XTAL_15MHZ
 #define xSYSCTL_XTAL_16MHZ      SYSCTL_XTAL_16MHZ
+#define xSYSCTL_XTAL_25MHZ      SYSCTL_XTAL_25MHZ
+
 
 
 //
@@ -883,7 +885,7 @@ extern unsigned long xSysCtlPeripheraIntNumGet(unsigned long ulPeripheralBase);
 //*****************************************************************************
 #define xSysCtlPeripheralClockSourceSet(ulPeripheralSrc, ulDivide)            \
         SysCtlPeripheralClockSourceSet(ulPeripheralSrc, ulDivide)
-											
+
 //*****************************************************************************
 //
 //! \brief Set a peripheral clock source and peripheral divide.
@@ -1816,6 +1818,13 @@ extern unsigned long xSysCtlPeripheraIntNumGet(unsigned long ulPeripheralBase);
 //
 #define SYSCTL_XTAL_16MHZ       0x00001000  
 
+//
+//! External main clock crystal is 25MHz.
+//
+#define SYSCTL_XTAL_25MHZ       0x00001900
+
+
+
 //*****************************************************************************
 //
 //! @}
@@ -1891,4 +1900,3 @@ extern unsigned long SysCtlAPB2ClockGet(void);
 #endif
 
 #endif // __xSYSCTL_H__
-
