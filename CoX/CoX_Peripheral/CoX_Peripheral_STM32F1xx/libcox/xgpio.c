@@ -2,7 +2,7 @@
 //
 //! \file xgpio.c
 //! \brief Driver for the GPIO AFIO and EXTI controller
-//! \version V2.1.1.0
+//! \version V2.2.1.0
 //! \date 12/16/2011
 //! \author CooCox
 //! \copy
@@ -39,6 +39,7 @@
 #include "xhw_types.h"
 #include "xhw_ints.h"
 #include "xhw_memmap.h"
+#include "xhw_config.h"
 #include "xhw_nvic.h"
 #include "xhw_sysctl.h"
 #include "xhw_gpio.h"
@@ -67,7 +68,7 @@ tGPIOPinIntAsssign;
 //
 static tGPIOPinIntAsssign g_psGPIOPinIntAssignTable[xGPIO_INT_NUMBER] = 
 {
-    0
+    {0,0}
 };
 
 //*****************************************************************************
@@ -159,7 +160,7 @@ void EXTI1IntHandler(void)
     // Clear the interrupt flag.
     //
     ulTemp = xHWREG(EXTI_PR);
-    xHWREG(EXTI_PR) |= (0x00000001 << 1);
+	xHWREG(EXTI_PR) |= (0x00000001 << 1);
     for(i=0; i<xGPIO_INT_NUMBER; i++)
     {
         if((g_psGPIOPinIntAssignTable[i].ulpinID & 0xffff) == GPIO_PIN_1)
@@ -1029,6 +1030,7 @@ GPIOPinConfigure(unsigned long ulPort, unsigned long ulPins,
 	
     ulInout = (ulPinConfig >> 29) & 0x07;
 	
+
     for(i=0; i<16; i++)
     {
         if((ulPins >> i) == 1)
@@ -1058,4 +1060,3 @@ GPIOPinConfigure(unsigned long ulPort, unsigned long ulPins,
     xHWREG(ulBase) &= ~(ulShift);
     xHWREG(ulBase) |= (ulShift);
 }
-

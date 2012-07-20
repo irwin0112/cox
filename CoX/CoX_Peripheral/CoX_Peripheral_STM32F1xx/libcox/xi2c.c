@@ -2,7 +2,7 @@
 //
 //! \file xspi.h
 //! \brief Driver for Inter-IC (I2C) bus block.
-//! \version V2.1.1.1
+//! \version V2.2.1.0
 //! \date 02/08/2011
 //! \author CooCox
 //! \copy
@@ -40,6 +40,7 @@
 #include "xhw_types.h"
 #include "xhw_ints.h"
 #include "xhw_memmap.h"
+#include "xhw_config.h"
 #include "xhw_sysctl.h"
 #include "xhw_i2c.h"
 #include "xdebug.h"
@@ -69,10 +70,10 @@ static xtEventCallback g_pfnI2CHandlerCallbacks[2]={0};
 //!
 //! \note This is only for master
 //!
-//! \return value of I2C status register after generate a start condition.
+//! \return None.
 //
 //*****************************************************************************
-unsigned long I2CStartSend (unsigned long ulBase)
+static void I2CStartSend (unsigned long ulBase)
 {
     //
     // Check the arguments.
@@ -83,8 +84,6 @@ unsigned long I2CStartSend (unsigned long ulBase)
     // Send start
     //
     xHWREG(ulBase + I2C_CR1) |= I2C_CR1_START;
-	
-    return 0;
 }
 
 //*****************************************************************************
@@ -98,14 +97,15 @@ unsigned long I2CStartSend (unsigned long ulBase)
 //! specified I2C BUS.
 //!
 //! The \e ulBase can be one of the following values:
-//! \b I2C0_BASE, \b I2C1_BASE.
+//! \b I2C2_BASE, \b I2C1_BASE.
 //!
 //! \note This is only for master
 //!
 //! \return None.
 //
 //*****************************************************************************
-void I2CStopSend (unsigned long ulBase)
+void 
+I2CStopSend (unsigned long ulBase)
 {
     //
     // Check the arguments.
@@ -126,14 +126,14 @@ void I2CStopSend (unsigned long ulBase)
 //! This function is to send a byte on specified I2C BUS.
 //!
 //! The \e ulBase can be one of the following values:
-//! \b I2C0_BASE, \b I2C1_BASE.
+//! \b I2C2_BASE, \b I2C1_BASE.
 //!
 //! \note This is only for master
 //!
-//! \return value of I2C status register after send a byte.
+//! \return None.
 //
 //*****************************************************************************
-unsigned long I2CByteSend (unsigned long ulBase, unsigned char ucData)
+static void I2CByteSend (unsigned long ulBase, unsigned char ucData)
 {
     //
     // Check the arguments.
@@ -144,55 +144,6 @@ unsigned long I2CByteSend (unsigned long ulBase, unsigned char ucData)
     // Send i2c address and RW bit 
     //
     xHWREG(ulBase + I2C_DR) = ucData;
-        
-    //
-    // Return the i2c status
-    //
-    return 0;
-}
-
-//*****************************************************************************
-//
-//! \internal
-//! \brief Get a byte to I2C bus. 
-//!
-//! \param ulBase specifies the I2C module base address.
-//! \param ucpData specifies the data point which will save the data get from 
-//! I2C BUS.
-//!
-//! This function is to get a byte on specified I2C BUS.
-//!
-//! The \e ulBase can be one of the following values:
-//! \b I2C0_BASE, \b I2C1_BASE.
-//!
-//! \note This is only for master
-//!
-//! \return value of I2C status register after send a byte.
-//
-//*****************************************************************************
-static unsigned long I2CByteGet (unsigned long ulBase, unsigned char *ucpData, 
-                                 unsigned char ucAck)
-{
-    //
-    // Check the arguments.
-    //
-    xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C1_BASE));
-    
-    //
-    // Make sure start bit is not active 
-    //
-    if (ucAck == 1)
-    {
-        xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
-    }
-    else
-    {
-        xHWREG(ulBase + I2C_CR1) &= ~I2C_CR1_ACK;
-    }
-    
-	while (!(xHWREG(ulBase + I2C_SR1) & I2C_SR1_RXNE));
-    *ucpData = (unsigned char)xHWREG(ulBase + I2C_DR);
-    return (xHWREG(ulBase + I2C_SR1) | (xHWREG(ulBase + I2C_SR2) << 16));
 }
 
 //*****************************************************************************
@@ -284,16 +235,16 @@ I2C1EVIntHandler(void)
     ulSR1 = xHWREG(ulBase + I2C_SR1);
     ulSR2 = (xHWREG(ulBase + I2C_SR2) << 16);
     ulStatus = (ulSR1 | ulSR2) & 0x00FFFFFF;
+
     //
-    // 0
+    // Clear Interrupt flag
     //
     I2CFlagStatusClear(ulBase, I2C_EVENT_SMBALERT | I2C_EVENT_TIMEOUT |
                                   I2C_EVENT_PECERR | I2C_EVENT_OVR |
                                   I2C_EVENT_AF | I2C_EVENT_ARLO | 
                                   I2C_EVENT_BERR);
     
-    if((ulStatus == I2C_EVENT_SLAVE_RECEIVER_ADDRESS_MATCHED) ||
-       (ulStatus == I2C_EVENT_SLAVE_BYTE_RECEIVED))
+    if((ulStatus == I2C_EVENT_SLAVE_BYTE_RECEIVED))
     {
         g_pfnI2CHandlerCallbacks[0](0, 0, xI2C_SLAVE_EVENT_RREQ, 0);
     }
@@ -345,7 +296,7 @@ I2C2EVIntHandler(void)
     ulSR2 = (xHWREG(ulBase + I2C_SR2) << 16);
     ulStatus = (ulSR1 | ulSR2) & 0x00FFFFFF;
     //
-    // 
+    // Clear interrupt flag
     //
     I2CFlagStatusClear(ulBase, I2C_EVENT_SMBALERT | I2C_EVENT_TIMEOUT |
                                   I2C_EVENT_PECERR | I2C_EVENT_OVR |
@@ -355,26 +306,26 @@ I2C2EVIntHandler(void)
     if((ulStatus == I2C_EVENT_SLAVE_RECEIVER_ADDRESS_MATCHED) ||
        (ulStatus == I2C_EVENT_SLAVE_BYTE_RECEIVED));
     {
-        g_pfnI2CHandlerCallbacks[0](0, 0, xI2C_SLAVE_EVENT_RREQ, 0);
+        g_pfnI2CHandlerCallbacks[1](0, 0, xI2C_SLAVE_EVENT_RREQ, 0);
     }
     if((ulStatus == I2C_EVENT_SLAVE_TRANSMITTER_ADDRESS_MATCHED) ||
        (ulStatus == I2C_EVENT_SLAVE_BYTE_TRANSMITTED));
     {
-        g_pfnI2CHandlerCallbacks[0](0, 0, xI2C_SLAVE_EVENT_TREQ, 0);
+        g_pfnI2CHandlerCallbacks[1](0, 0, xI2C_SLAVE_EVENT_TREQ, 0);
     }
     if((ulStatus == I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED) ||
        (ulStatus == I2C_EVENT_MASTER_BYTE_TRANSMITTED));
     {
-        g_pfnI2CHandlerCallbacks[0](0, 0, xI2C_MASTER_EVENT_TX, 0);
+        g_pfnI2CHandlerCallbacks[1](0, 0, xI2C_MASTER_EVENT_TX, 0);
     }
     if((ulStatus == I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED) ||
        (ulStatus == I2C_EVENT_MASTER_BYTE_RECEIVED));
     {
-        g_pfnI2CHandlerCallbacks[0](0, 0, xI2C_MASTER_EVENT_RX, 0);
+        g_pfnI2CHandlerCallbacks[1](0, 0, xI2C_MASTER_EVENT_RX, 0);
     }
     if((ulStatus == I2C_EVENT_SLAVE_STOP_DETECTED));
     {
-        g_pfnI2CHandlerCallbacks[0](0, 0, xI2C_SLAVE_EVENT_STOP, 0);
+        g_pfnI2CHandlerCallbacks[1](0, 0, xI2C_SLAVE_EVENT_STOP, 0);
     }
 }
 
@@ -470,10 +421,7 @@ I2CMasterInit(unsigned long ulBase, unsigned long ulI2CClk,
         xHWREG(ulBase + I2C_CCR) = ulCCR;
         xHWREG(ulBase + I2C_TRISE) = ulTRISE + 1;
     }
-    
     I2CEnable(ulBase);
-    xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
-    xHWREG(ulBase + I2C_OAR1) = I2C_OAR1_RES |0xA0;
 }
 
 //*****************************************************************************
@@ -489,7 +437,7 @@ I2CMasterInit(unsigned long ulBase, unsigned long ulI2CClk,
 //! function of specified I2C port.
 //!
 //! The \e ulBase can be one of the following values:
-//! \b I2C0_BASE, \b I2C1_BASE.
+//! \b I2C2_BASE, \b I2C1_BASE.
 //!
 //! The \e ulAddrConfig is the I2C slave address type,There are 2 type.
 //! The ulAddrConfig can be I2C_ADDR_7BIT, I2C_ADDR_10BIT.
@@ -551,6 +499,11 @@ I2CEnable(unsigned long ulBase)
     xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C2_BASE));
 
     //
+    // Set the I2C mode.
+    //
+    xHWREG(ulBase + I2C_CR1) &= ~I2C_CR1_SMBUS;
+
+    //
     // Enable the master block.
     //
     xHWREG(ulBase + I2C_CR1) |= I2C_CR1_PE;
@@ -579,6 +532,60 @@ I2CDisable(unsigned long ulBase)
     // Disable the master block.
     //
     xHWREG(ulBase + I2C_CR1) &= ~(I2C_CR1_PE);
+}
+
+//*****************************************************************************
+//
+//! Enables the I2C Master block.
+//!
+//! \param ulBase is the base address of the I2C module.
+//!
+//! This will enable operation of the I2C master block.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void
+I2CMasterEnable(unsigned long ulBase)
+{
+    //
+    // Check the arguments.
+    //
+    xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C2_BASE));
+
+    //
+    // Set the I2C mode.
+    //
+    xHWREG(ulBase + I2C_CR1) &= ~I2C_CR1_SMBUS;
+    //
+    // Enable the master block.
+    //
+    xHWREG(ulBase + I2C_CR1) |= I2C_CR1_PE;
+}
+
+//*****************************************************************************
+//
+//! Disables the I2C Master block.
+//!
+//! \param ulBase is the base address of the I2C module.
+//!
+//! This will disable operation of the I2C master block.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void
+I2CMasterDisable(unsigned long ulBase)
+{
+    //
+    // Check the arguments.
+    //
+    xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C2_BASE));
+
+    //
+    // Disable the master block.
+    //
+    xHWREG(ulBase + I2C_CR1) &= ~I2C_CR1_PE;
 }
 
 //*****************************************************************************
@@ -744,7 +751,6 @@ I2CDMADisable(unsigned long ulBase)
 //! \param ulDual is specifies enable dual address or not of the I2C module.
 //! \param ucAddress is specifies the 7bit I2C own address2.
 //!
-//! The \e ulDual is the DMA last transfer.
 //! The ulDual can be \b I2C_DUAL_ADD_EN, \b I2C_DUAL_ADD_DIS.
 //!
 //! This will configures the specified I2C own address2.
@@ -778,7 +784,7 @@ I2COwnAddress2Config(unsigned long ulBase, unsigned long ulDual,
 //! \return None.
 //
 //*****************************************************************************
-void
+void  
 I2CSoftwareResetEnable(unsigned long ulBase)
 {
     //
@@ -787,7 +793,7 @@ I2CSoftwareResetEnable(unsigned long ulBase)
     xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C2_BASE));
 
     //
-    // This bit can be used in case the BUSY bit is set to бо1 when no stop 
+    // This bit can be used in case the BUSY bit is set to 1 when no stop 
     // condition has been detected on the bus.
     //
     while ((xHWREG(ulBase + I2C_SR1) & I2C_SR1_STOPF));
@@ -855,32 +861,13 @@ I2CNACKPositionConfig(unsigned long ulBase, unsigned long ulNACKPosition)
     // Check the arguments.
     //
     xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C2_BASE));
-
+    xASSERT((ulNACKPosition == I2C_NACKPOS_NEXT) || 
+            (ulNACKPosition == I2C_NACKPOS_CURRENT));
+    
     xHWREG(ulBase + I2C_CR1) &= ~I2C_CR1_POS;
     xHWREG(ulBase + I2C_CR1) |= ulNACKPosition;
 }
 
-//*****************************************************************************
-//
-//! Enables the specified I2C acknowledge feature.
-//!
-//! \param ulBase is the base address of the I2C module.
-//!
-//! This will Enables the specified I2C acknowledge feature.
-//!
-//! \return None.
-//
-//*****************************************************************************
-void 
-I2CAcknowledgeEnable(unsigned long ulBase)
-{
-    //
-    // Check the arguments.
-    //
-    xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C2_BASE));
-
-    xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
-}
 //*****************************************************************************
 //
 //! Selects the specified I2C PEC position.
@@ -907,6 +894,7 @@ I2CPECPositionConfig(unsigned long ulBase, unsigned long ulPECPosition)
     // Check the arguments.
     //
     xASSERT((ulBase == I2C1_BASE) || (ulBase == I2C2_BASE));
+    xASSERT((ulBase == I2C_PECPOS_NEXT) || (ulBase == I2C_PECPOS_CURRENT));
 
     xHWREG(ulBase + I2C_CR1) &= ~I2C_CR1_POS;
     xHWREG(ulBase + I2C_CR1) |= ulPECPosition;
@@ -1771,7 +1759,7 @@ I2CMasterReadRequestS1(unsigned long ulBase, unsigned char ucSlaveAddr,
     //    ulStatus = xHWREG(ulBase + I2C_SR2);
     //}while((ulStatus & I2C_SR2_BUSY));
     
-    //xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
+    xHWREG(ulBase + I2C_CR1) |= I2C_CR1_ACK;
     
     //
     // Send start

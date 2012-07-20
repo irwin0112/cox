@@ -1,8 +1,8 @@
 //*****************************************************************************
 //
 //! \file xspi.h
-//! \brief Prototypes for the spi Driver.
-//! \version V2.1.1.1
+//! \brief Prototypes for the UART Driver.
+//! \version V2.2.1.0
 //! \date 11/14/2011
 //! \author CooCox
 //! \copy
@@ -206,7 +206,7 @@ extern "C"
 //
 //! Moto Format, polarity 0, phase 0
 //
-#define xSPI_MOTO_FORMAT_MODE_0 SPI_FORMAT_MODE_0
+#define xSPI_MOTO_FORMAT_MODE_0 SPI_FORMAT_MODE_1
 
 //
 //! Moto Format, polarity 0, phase 1
@@ -383,10 +383,10 @@ extern "C"
 //
 //*****************************************************************************
 
-#define xSPI_SS_NONE            SPI_SS_NONE   
+//#define xSPI_SS_NONE            SPI_SS_NONE   
 #define xSPI_SS0                SPI_SS0  
-#define xSPI_SS1                SPI_SS1 
-#define xSPI_SS01               SPI_SS0_SS1
+//#define xSPI_SS1                SPI_SS1 
+//#define xSPI_SS01               SPI_SS0_SS1
 
 //*****************************************************************************
 //
@@ -520,7 +520,6 @@ extern "C"
         do                                                                    \
         {                                                                     \
          SPIConfig(ulBase, ulBitRate, ulConfig);                              \
-				 SPISSModeConfig(SPI1_BASE, SPI_SS_HARDWARE);                         \
         }                                                                     \
         while(0)
 

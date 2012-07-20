@@ -543,8 +543,9 @@ HX8347Init(unsigned long ulSpiClock)
     //
     // Output default value : CS enable, BL_CN enable.
     //
-    GPIOPinReset(HX8347_PIN_PORT, GPIO_PIN_2);
-    GPIOPinSet(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS | HX8347_GPIO_BL_CN);
+    xGPIOSPinWrite(HX8347_PIN_CS, 0);
+    xGPIOSPinWrite(HX8347_PIN_CS, 1);
+    xGPIOSPinWrite(HX8347_PIN_BL_CN, 1);
     
     //
     // Set HX8347_PIN_SPI_SCK as SPIx.SCK
@@ -561,19 +562,18 @@ HX8347Init(unsigned long ulSpiClock)
     //
     // Set HX8347_PIN_SPI_MOSI as SPIx.MOSI
     //
-    xHWREG(AFIO_MAPR) |= 0x10000000;
     //xSPinTypeSPI(HX8347_SPI_MOSI, HX8347_PIN_SPI_MOSI);
+    xHWREG(AFIO_MAPR) |= 0x10000000;
     xGPIOSDirModeSet(PC12, GPIO_DIR_MODE_HWSTD);                    
     
     //
     // Enable SPI in Master Mode, CPOL =1, CPHA =1 .
     // Max 18 MBit used for Data Transfer.
     //
-    SPIConfig(HX8347_PIN_SPI_PORT, ulSpiClock, SPI_MODE_MASTER |
-                                               SPI_FORMAT_MODE_4);  
-    SPISSModeConfig(HX8347_PIN_SPI_PORT, SPI_SS_SOFTWARE);
-    SPISSIConfig(HX8347_PIN_SPI_PORT, SPI_SSSET);
-    SPIEnble(HX8347_PIN_SPI_PORT);
+    xSPIConfigSet(HX8347_PIN_SPI_PORT, ulSpiClock, 
+                  SPI_MODE_MASTER | SPI_FORMAT_MODE_4
+                | SPI_SS_SOFTWARE | SPI_SSSET);  
+    xSPIEnable(HX8347_PIN_SPI_PORT);
     
     //
     //Delay 50 ms.
@@ -667,10 +667,8 @@ HX8347Init(unsigned long ulSpiClock)
     //
     // Memory Access Control.
     //
-    HX8347WriteReg(HX8347_MEMORY_CON, 
-                   HX8347_MEMORY_CON_MV |
-                   HX8347_MEMORY_CON_MX |
-                   HX8347_MEMORY_CON_BGR);
+    HX8347WriteReg(HX8347_MEMORY_CON, HX8347_MEMORY_CON_MV |
+                   HX8347_MEMORY_CON_MX |HX8347_MEMORY_CON_BGR);
     //
     // Set GRAM Area
     //
@@ -691,11 +689,12 @@ HX8347Init(unsigned long ulSpiClock)
 void
 HX8347WriteCmd(unsigned char ucCmd)
 {                                                
-    GPIOPinReset(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS);
-    xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, HX8347_SPI_START | HX8347_SPI_WR | HX8347_SPI_INDEX);
+    xGPIOSPinWrite(HX8347_PIN_CS, 0);
+    xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, HX8347_SPI_START 
+                          | HX8347_SPI_WR | HX8347_SPI_INDEX);
     xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, 0);
     xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, ucCmd);
-    GPIOPinSet(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS);
+    xGPIOSPinWrite(HX8347_PIN_CS, 1);
 }
 
 //*****************************************************************************
@@ -712,11 +711,12 @@ HX8347WriteCmd(unsigned char ucCmd)
 void
 HX8347WriteDat(unsigned short ucVal)
 {
-    GPIOPinReset(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS);
-    xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, HX8347_SPI_START | HX8347_SPI_WR | HX8347_SPI_DATA);
+    xGPIOSPinWrite(HX8347_PIN_CS, 0);
+    xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, HX8347_SPI_START 
+                          | HX8347_SPI_WR | HX8347_SPI_DATA);
     xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, ucVal >> 8);
     xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, ucVal & 0xFF);
-    GPIOPinSet(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS);
+    xGPIOSPinWrite(HX8347_PIN_CS, 1);
 }
 
 //*****************************************************************************
@@ -752,13 +752,16 @@ HX8347WriteReg(unsigned char ucReg, unsigned short ucVal)
 unsigned short HX8347ReadData(void)
 {   
     unsigned short usVal = 0;
-    GPIOPinReset(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS);
-    xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, HX8347_SPI_START | HX8347_SPI_RD | HX8347_SPI_DATA);
+    xGPIOSPinWrite(HX8347_PIN_CS, 0);
+    xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, HX8347_SPI_START 
+                          | HX8347_SPI_RD | HX8347_SPI_DATA);
     xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, 0);
+    
     usVal = xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, 0);
     usVal <<= 8;
     usVal |= xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, 0);
-    GPIOPinSet(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS);
+    
+    xGPIOSPinWrite(HX8347_PIN_CS, 1);
     return (usVal);
 }
 //*****************************************************************************
@@ -901,9 +904,9 @@ HX8347LCDClear(unsigned short usColor)
 void
 HX8347WriteDataStart(void)
 {
-    GPIOPinReset(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS);
-    xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, 
-                            HX8347_SPI_START | HX8347_SPI_WR | HX8347_SPI_DATA);
+    xGPIOSPinWrite(HX8347_PIN_CS, 0);
+    xSPISingleDataReadWrite(HX8347_PIN_SPI_PORT, HX8347_SPI_START 
+                          | HX8347_SPI_WR | HX8347_SPI_DATA);
 }
 
 //*****************************************************************************
@@ -938,7 +941,7 @@ HX8347WriteDataOnly(unsigned short usC)
 void
 HX8347WriteDataStop(void)
 {
-    GPIOPinSet(HX8347_PIN_PORT, HX8347_GPIO_PIN_CS);
+    xGPIOSPinWrite(HX8347_PIN_CS, 1);
 }
 
 //*****************************************************************************
@@ -1138,6 +1141,7 @@ HX8347DisplayString(unsigned long ulLine, unsigned long ulCol,
                                           unsigned char *pucStr)
 {
     HX8347SetWindowMax();
+    
     while(*pucStr)
     {   if(ulCol > 19)
         {

@@ -2,7 +2,7 @@
 //
 //! \file xhw_memmap.h
 //! \brief Macros defining the memory map of the MCU.
-//! \version V2.1.1.0
+//! \version V2.2.1.0
 //! \date 11/20/2011
 //! \author CooCox
 //! \copy
@@ -77,7 +77,7 @@
 
 #define xFLASH_BASE             0           // Flash memory
 #define xSRAM_BASE              0x20000000  // SRAM memory
-#define xWDT_BASE               0           // WatchDog
+#define xWDT_BASE               WWDG_BASE   // WatchDog
 #define xGPIO_PORTA_BASE        GPIOA_BASE  // GPIOA
 #define xGPIO_PORTB_BASE        GPIOB_BASE  // GPIOB
 #define xGPIO_PORTC_BASE        GPIOC_BASE  // GPIOC
@@ -111,15 +111,25 @@
 #define xSPI2_BASE              SPI2_BASE   // SPI1
 #define xSPI3_BASE              SPI3_BASE   // SPI2
 
-#define xI2C1_BASE              I2C1_BASE   // I2C0 
-#define xI2C2_BASE              I2C2_BASE   // I2C1 
+#define xI2C1_BASE              I2C1_BASE   // I2C1 
+#define xI2C2_BASE              I2C2_BASE   // I2C2 
 
 #define xADC1_BASE              ADC1_BASE   // ADC0
 #define xADC2_BASE              ADC2_BASE   // ADC1
 
 #define xACMP0_BASE             0           // ACMP
-#define xPWMA_BASE              0           // PWMA
-#define xPWMB_BASE              0           // PWMB
+#define xPWMA_BASE              TIM1_BASE   // PWMA
+#define xPWMB_BASE              TIM8_BASE   // PWMB
+#define xPWMC_BASE              TIM2_BASE   // PWMC
+#define xPWMD_BASE              TIM3_BASE   // PWMD
+#define xPWME_BASE              TIM4_BASE   // PWME
+#define xPWMF_BASE              TIM5_BASE   // PWMF
+#define xPWMG_BASE              TIM9_BASE   // PWMG
+#define xPWMH_BASE              TIM12_BASE  // PWMH
+#define xPWMI_BASE              TIM10_BASE  // PWMI
+#define xPWMJ_BASE              TIM11_BASE  // PWMJ
+#define xPWMK_BASE              TIM13_BASE  // PWMK
+#define xPWML_BASE              TIM14_BASE  // PWML
 
 #define xDMA1_BASE              DMA1_BASE   // DMA
 
@@ -188,7 +198,7 @@
 
 #define AFIO_BASE               0x40010000  // AFIO
 #define EXTI_BASE               0x40010400  // EXTI
-#define GPIOA_BASE              0x40010800  //4 GPIO Port A
+#define GPIOA_BASE              0x40010800  // GPIO Port A
 #define GPIOB_BASE              0x40010C00  // GPIO Port B
 #define GPIOC_BASE              0x40011000  // GPIO Port C
 #define GPIOD_BASE              0x40011400  // GPIO Port D
@@ -242,5 +252,4 @@
 //*****************************************************************************
 
 #endif // __XHW_MEMMAP_H__
-
 

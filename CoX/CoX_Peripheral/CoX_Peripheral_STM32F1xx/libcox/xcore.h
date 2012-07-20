@@ -4,7 +4,7 @@
 //! \brief Prototypes for the CPU instruction wrapper functions.
 //! Prototypes for the NVIC Interrupt Controller Driver.
 //! Prototypes for the SysTick driver.
-//! \version V2.1.1.0
+//! \version V2.2.1.0
 //! \date 11/20/2011
 //! \author CooCox
 //! \copy
@@ -55,7 +55,7 @@ extern "C"
 
 //*****************************************************************************
 //
-//! \addtogroup COX_Peripheral_Lib
+//! \addtogroup CoX_Peripheral_Lib
 //! @{
 //
 //*****************************************************************************
@@ -106,7 +106,7 @@ extern unsigned long xCPUcpsid(void);
 extern unsigned long xCPUcpsie(void);
 extern unsigned long xCPUprimask(void);
 extern void xCPUwfi(void);
-extern void xCPUwfie(void);
+extern void xCPUwfe(void);
 extern unsigned long xCPUbasepriGet(void);
 extern void xCPUbasepriSet(unsigned long ulNewBasepri);
 extern void xCPUpspSet(unsigned long ulNewPspStack);

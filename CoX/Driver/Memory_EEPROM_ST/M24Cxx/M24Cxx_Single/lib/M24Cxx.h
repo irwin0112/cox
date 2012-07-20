@@ -95,7 +95,7 @@ extern "C"
 //! User device config,it can only be M24C64 M24C32 M24C08
 //! 
 // 
-#define M24Cxx_Device         M24C64 
+#define M24Cxx_Device           M24C64 
   
 //*****************************************************************************
 //
@@ -122,7 +122,7 @@ extern "C"
 //
 //! Define M24Cxx I2C slave address
 //
-#define M24Cxx_ADDRESS            0x50 
+#define M24Cxx_ADDRESS          0x50 
 
 //*****************************************************************************
 //

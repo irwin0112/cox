@@ -77,13 +77,17 @@ void SevenSegmentInit (void)
     for(ulI = 0; ulI < LEDn; ulI++)
     {
        xSysCtlPeripheralEnable2(GPIO_LED_PORT[ulI]);
-       xGPIODirModeSet(GPIO_LED_PORT[ulI], GPIO_LED_PIN[ulI], GPIO_DIR_MODE_OUT);
+       xGPIODirModeSet(GPIO_LED_PORT[ulI], 
+                       GPIO_LED_PIN[ulI], 
+                       GPIO_DIR_MODE_OUT);
     }
     
       for(ulI = 0; ulI < CHIP_SEL_NUM; ulI++)
     {
        xSysCtlPeripheralEnable2(GPIO_SEL_PORT[ulI]);
-       xGPIODirModeSet(GPIO_SEL_PORT[ulI], GPIO_SEL_PIN[ulI], GPIO_DIR_MODE_OUT);
+       xGPIODirModeSet(GPIO_SEL_PORT[ulI], 
+                       GPIO_SEL_PIN[ulI], 
+                       GPIO_DIR_MODE_OUT);
     }
     SevenLEDOff();
 }
@@ -101,10 +105,10 @@ void SevenSegmentInit (void)
 //*****************************************************************************
 void SevenSegmentClear ()
 {
-    GPIOPinSet(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0]);
-    GPIOPinSet(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1]);
-    GPIOPinSet(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2]);
-    GPIOPinSet(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3]);
+    xGPIOPinWrite(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0], 1);
+    xGPIOPinWrite(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1], 1);
+    xGPIOPinWrite(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2], 1);
+    xGPIOPinWrite(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3], 1);
 }
 
 //*****************************************************************************
@@ -120,14 +124,14 @@ void SevenSegmentClear ()
 //*****************************************************************************
 void SevenLEDOff(void)
 {
-    GPIOPinSet(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-    GPIOPinSet(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-    GPIOPinSet(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-    GPIOPinSet(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-    GPIOPinSet(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-    GPIOPinSet(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-    GPIOPinSet(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-    GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]); 
+    xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 1);
+    xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 1);
+    xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 1);
+    xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 1);
+    xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 1);
+    xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 1);
+    xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 1);
+    xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1); 
 }
 
 //*****************************************************************************
@@ -143,51 +147,51 @@ void SevenLEDOff(void)
 //*****************************************************************************
 void LEDChipSel(unsigned short usLED)
 {
-  switch (usLED)
-  {
-    case LED_ONE:
-      GPIOPinReset(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0]);
-      GPIOPinSet(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1]);
-      GPIOPinSet(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2]);
-      GPIOPinSet(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3]);
-	  break;
+    switch (usLED)
+    {
+      case LED_ONE:
+        xGPIOPinWrite(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0], 0);
+        xGPIOPinWrite(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3], 1);
+	    break;
 
-    case LED_TWO:
-      GPIOPinSet(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0]);
-      GPIOPinReset(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1]);
-      GPIOPinSet(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2]);
-      GPIOPinSet(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3]);
-	  break;
+      case LED_TWO:
+        xGPIOPinWrite(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1], 0);
+        xGPIOPinWrite(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3], 1);
+	    break;
 
-    case LED_THREE:
-      GPIOPinSet(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0]);
-      GPIOPinSet(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1]);
-      GPIOPinReset(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2]);
-      GPIOPinSet(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3]);
-	  break;
+      case LED_THREE:
+        xGPIOPinWrite(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2], 0);
+        xGPIOPinWrite(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3], 1);
+	    break;
 
-    case LED_FOUR:
-      GPIOPinSet(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0]);
-      GPIOPinSet(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1]);
-      GPIOPinSet(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2]);
-      GPIOPinReset(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3]);
-	  break;
+      case LED_FOUR:
+        xGPIOPinWrite(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2], 1);
+        xGPIOPinWrite(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3], 0);
+	    break;
 
-    case LED_ALL:
-      GPIOPinReset(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0]);
-      GPIOPinReset(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1]);
-      GPIOPinReset(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2]);
-      GPIOPinReset(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3]);
-	  break;  
+      case LED_ALL:
+        xGPIOPinWrite(GPIO_SEL_PORT[0], GPIO_SEL_PIN[0], 0);
+        xGPIOPinWrite(GPIO_SEL_PORT[1], GPIO_SEL_PIN[1], 0);
+        xGPIOPinWrite(GPIO_SEL_PORT[2], GPIO_SEL_PIN[2], 0);
+        xGPIOPinWrite(GPIO_SEL_PORT[3], GPIO_SEL_PIN[3], 0);
+	    break;  
 
-    default:
-      break; 
-  }	
+      default:
+            break; 
+    }	
 
-  //
-  // LED is off by default after chip select.
-  //
-  SevenLEDOff(); 
+    //
+    // LED is off by default after chip select.
+    //
+    SevenLEDOff(); 
 }
 
 //*****************************************************************************
@@ -204,191 +208,191 @@ void LEDChipSel(unsigned short usLED)
 //*****************************************************************************
 xtBoolean SevenSegmentShow (unsigned short usLED, unsigned char ucData)
 {
-  SevenSegmentClear();
-  LEDChipSel(usLED);
+    SevenSegmentClear();
+    LEDChipSel(usLED);
 
-  switch (ucData)
-  {
-    case 0:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinSet(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+    switch (ucData)
+    {
+      case 0:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 1:
-      GPIOPinSet(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinSet(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinSet(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinSet(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinSet(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 1:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 2:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinSet(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinSet(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 2:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 3:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinSet(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinSet(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 3:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
     
-    case 4:
-      GPIOPinSet(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinSet(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinSet(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 4:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 	
-    case 5:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinSet(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinSet(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 5:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 6:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinSet(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 6:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+             break;
 
-    case 7:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinSet(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinSet(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinSet(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinSet(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 7:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 8:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 8:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 9:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinSet(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 9:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 0xa:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinSet(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 0xa:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 0xb:
-      GPIOPinSet(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinSet(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 0xb:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 0xc:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinSet(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinSet(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinSet(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 0xc:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 0xd:
-      GPIOPinSet(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinReset(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinSet(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 0xd:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 0xe:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinReset(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinSet(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinReset(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 0xe:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    case 0xf:
-      GPIOPinReset(GPIO_LED_PORT[0], GPIO_LED_PIN[0]);
-      GPIOPinSet(GPIO_LED_PORT[1], GPIO_LED_PIN[1]);
-      GPIOPinSet(GPIO_LED_PORT[2], GPIO_LED_PIN[2]);
-      GPIOPinSet(GPIO_LED_PORT[3], GPIO_LED_PIN[3]);
-      GPIOPinReset(GPIO_LED_PORT[4], GPIO_LED_PIN[4]);
-      GPIOPinReset(GPIO_LED_PORT[5], GPIO_LED_PIN[5]);
-      GPIOPinReset(GPIO_LED_PORT[6], GPIO_LED_PIN[6]);
-      GPIOPinSet(GPIO_LED_PORT[7], GPIO_LED_PIN[7]);
-      break;
+      case 0xf:
+        xGPIOPinWrite(GPIO_LED_PORT[0], GPIO_LED_PIN[0], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[1], GPIO_LED_PIN[1], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[2], GPIO_LED_PIN[2], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[3], GPIO_LED_PIN[3], 1);
+        xGPIOPinWrite(GPIO_LED_PORT[4], GPIO_LED_PIN[4], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[5], GPIO_LED_PIN[5], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[6], GPIO_LED_PIN[6], 0);
+        xGPIOPinWrite(GPIO_LED_PORT[7], GPIO_LED_PIN[7], 1);
+            break;
 
-    default:
-      return xfalse;
-  }
-  return xtrue;
+      default:
+            return xfalse;
+    }
+    return xtrue;
 }
 
 //*****************************************************************************
@@ -405,59 +409,59 @@ xtBoolean SevenSegmentShow (unsigned short usLED, unsigned char ucData)
 //*****************************************************************************
 xtBoolean SevenSegmentScan(unsigned long ulData, unsigned char ucForm)
 {
-  unsigned char ucUnits,ucTens,ucHundreds,ucThousands;
+    unsigned char ucUnits,ucTens,ucHundreds,ucThousands;
 
-  if(ucForm == DECIMAL)
-  {
-    if(ulData > 9999) return xfalse;
+    if(ucForm == DECIMAL)
+    {
+      if(ulData > 9999) return xfalse;
 
-    ucThousands = ulData/1000;
-    ucHundreds  = (ulData%1000)/100;
-    ucTens      = (ulData%100)/10;
-    ucUnits     = (ulData%10);
-
-
-    SevenSegmentShow(LED_ONE,ucUnits);
-    xSysCtlDelay(72000);
-
-    SevenSegmentShow(LED_TWO,ucTens);
-    xSysCtlDelay(72000);
-
-    SevenSegmentShow(LED_THREE,ucHundreds);
-    xSysCtlDelay(72000);
-
-    SevenSegmentShow(LED_FOUR,ucThousands);
-    xSysCtlDelay(72000);
-
-  }
-
-  else if(ucForm == HEXADECIMAL)
-  {
-    if(ulData > 0xFFFF) return xfalse;
-
-    ucThousands = (ulData >> 12)& 0x0F;
-    ucHundreds  = (ulData >> 8 )& 0x0F;
-    ucTens      = (ulData >> 4) & 0x0F;
-    ucUnits     =  ulData       & 0x0F;
+      ucThousands = ulData/1000;
+      ucHundreds  = (ulData%1000)/100;
+      ucTens      = (ulData%100)/10;
+      ucUnits     = (ulData%10);
 
 
-    SevenSegmentShow(LED_ONE,ucUnits);
-    xSysCtlDelay(72000);
+      SevenSegmentShow(LED_ONE,ucUnits);
+      xSysCtlDelay(72000);
 
-    SevenSegmentShow(LED_TWO,ucTens);
-    xSysCtlDelay(72000);
+      SevenSegmentShow(LED_TWO,ucTens);
+      xSysCtlDelay(72000);
 
-    SevenSegmentShow(LED_THREE,ucHundreds);
-    xSysCtlDelay(72000);
+      SevenSegmentShow(LED_THREE,ucHundreds);
+      xSysCtlDelay(72000);
 
-    SevenSegmentShow(LED_FOUR,ucThousands);
-    xSysCtlDelay(72000);
+      SevenSegmentShow(LED_FOUR,ucThousands);
+      xSysCtlDelay(72000);
 
-  }
-  else
-    return xfalse;
+    }
 
-  return xtrue;
+    else if(ucForm == HEXADECIMAL)
+    {
+      if(ulData > 0xFFFF) return xfalse;
+
+      ucThousands = (ulData >> 12)& 0x0F;
+      ucHundreds  = (ulData >> 8 )& 0x0F;
+      ucTens      = (ulData >> 4) & 0x0F;
+      ucUnits     =  ulData       & 0x0F;
+
+
+      SevenSegmentShow(LED_ONE,ucUnits);
+      xSysCtlDelay(72000);
+
+      SevenSegmentShow(LED_TWO,ucTens);
+      xSysCtlDelay(72000);
+
+      SevenSegmentShow(LED_THREE,ucHundreds);
+      xSysCtlDelay(72000);
+
+      SevenSegmentShow(LED_FOUR,ucThousands);
+      xSysCtlDelay(72000);
+
+    }
+    else
+      return xfalse;
+
+    return xtrue;
 }
 
 

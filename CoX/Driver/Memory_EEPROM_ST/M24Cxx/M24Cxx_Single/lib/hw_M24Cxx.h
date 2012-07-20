@@ -106,13 +106,13 @@
 #define M24C64_PAGE_SIZE        32UL
 #define M24C64_SIZE             8192UL
 
-#define M24C01                   0
-#define M24C02                   1
-#define M24C04                   2
-#define M24C08                   3
-#define M24C16                   4
-#define M24C32                   5
-#define M24C64                   6
+#define M24C01                  0
+#define M24C02                  1
+#define M24C04                  2
+#define M24C08                  3
+#define M24C16                  4
+#define M24C32                  5
+#define M24C64                  6
 
 //*****************************************************************************
 //

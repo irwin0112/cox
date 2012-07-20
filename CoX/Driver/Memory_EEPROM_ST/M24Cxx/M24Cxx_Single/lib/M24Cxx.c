@@ -117,7 +117,6 @@ void M24CxxInit(void)
     // Initializes the I2C Master block.
     //
     xI2CMasterInit(M24Cxx_PIN_I2C_PORT, I2C_Speed);
-
 }
 
 //*****************************************************************************
@@ -307,7 +306,9 @@ void M24CxxPageWrite(unsigned char* pucBuffer,
     //
     // Transmit the LSB of the M24Cxxs internal address.
     //    
-    xI2CMasterWriteS2(M24Cxx_PIN_I2C_PORT, (unsigned char)(usWriteAddr & 0x00FF),xfalse);
+    xI2CMasterWriteS2(M24Cxx_PIN_I2C_PORT, 
+                      (unsigned char)(usWriteAddr & 0x00FF),
+                      xfalse);
 	  
     //
     // While there is data to be written.
@@ -402,10 +403,6 @@ void M24CxxBufferRead(unsigned char* pucBuffer,
         }  
         usNumByteToRead--;        
     }
-    //
-    // Enable ACK to be ready for another reception.
-    //
-    I2CAcknowledgeEnable(M24Cxx_PIN_I2C_PORT);
 }   
 //*****************************************************************************
 //
@@ -425,7 +422,8 @@ void M24CxxWaitEepromStandbyState(void)
       //
       // Send START condition.
       //
-      I2CStartSend(M24Cxx_PIN_I2C_PORT);
+      //I2CStartSend(M24Cxx_PIN_I2C_PORT);
+      xHWREG(M24Cxx_PIN_I2C_PORT + I2C_CR1) |= I2C_CR1_START;
       //
       // Read I2C SR1 register to clear pending flags.
       //
@@ -433,7 +431,7 @@ void M24CxxWaitEepromStandbyState(void)
       //
       // Send M24Cxx address for write.
       //
-      I2CByteSend(M24Cxx_PIN_I2C_PORT, (M24Cxx_ADDRESS << 1) | 0);
+      xI2CMasterDataPut(M24Cxx_PIN_I2C_PORT, (M24Cxx_ADDRESS << 1) | 0);
     }while(!((xHWREG(M24Cxx_PIN_I2C_PORT + I2C_SR1)) & I2C_SR1_ADDR));   
     //
     // Clear Af flag.
@@ -442,5 +440,5 @@ void M24CxxWaitEepromStandbyState(void)
     //
     // Send STOP condition.
     //
-    I2CStopSend(M24Cxx_PIN_I2C_PORT);
+    xI2CMasterStop(M24Cxx_PIN_I2C_PORT);
 }

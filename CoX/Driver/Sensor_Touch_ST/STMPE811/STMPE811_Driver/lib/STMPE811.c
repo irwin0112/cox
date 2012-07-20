@@ -48,6 +48,7 @@
 #include "hw_STMPE811.h"
 
 #define I2C_Speed               400000
+
 unsigned long ulX, ulY, ulZ;
 xtBoolean TouchDetect = xfalse;
                                        
@@ -224,11 +225,13 @@ STMPE811Write(unsigned char ucReg, unsigned char ucNum, unsigned long ulVal)
     {     
       if(ucNum == 0)
       {
-        xI2CMasterWriteS2(STMPE811_PIN_I2C_PORT, (unsigned char)(ulVal & 0xFF), xtrue);
+        xI2CMasterWriteS2(STMPE811_PIN_I2C_PORT, 
+                         (unsigned char)(ulVal & 0xFF), xtrue);
       }	
       else
       {        
-    	xI2CMasterWriteS2(STMPE811_PIN_I2C_PORT, (unsigned char)(ulVal & 0xFF), xfalse);
+    	xI2CMasterWriteS2(STMPE811_PIN_I2C_PORT, 
+                         (unsigned char)(ulVal & 0xFF), xfalse);
         ulVal >>= 8;
       } 
     }
@@ -278,7 +281,6 @@ STMPE811Read(unsigned char ucReg, unsigned char ucNum, unsigned char* pucBuffer)
         }  
         ucNum--;        
     }
-    I2CAcknowledgeEnable(STMPE811_PIN_I2C_PORT);
 }
 
 //*****************************************************************************

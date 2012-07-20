@@ -2,7 +2,7 @@
 //
 //! \file xhw_i2c.h
 //! \brief Macros and defines used when accessing the I2C hardware.
-//! \version V2.1.1.0
+//! \version V2.2.1.0
 //! \date 02/03/2012
 //! \author CooCox
 //! \copy
@@ -56,7 +56,7 @@
 //*****************************************************************************
 //
 //! \addtogroup STM32F1xx_I2C_Register STM32F1xx I2C Register
-//! \brief Here are the detailed info of SPI registers. 
+//! \brief Here are the detailed info of I2C registers. 
 //!
 //! it contains:
 //! - Register offset.
@@ -275,11 +275,6 @@
 //! Addressing mode (slave mode)
 //
 #define I2C_OAR1_ADDMODE        0x00008000
-
-//
-//! Res. must be configured and kept at 1
-//
-#define I2C_OAR1_RES            0x00004000
 
 //
 //! Interface address mask

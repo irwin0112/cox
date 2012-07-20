@@ -2,7 +2,7 @@
 //
 //! \file xuart.h
 //! \brief Prototypes for the UART Driver.
-//! \version V2.1.1.1
+//! \version V2.2.1.0
 //! \date 11/14/2011
 //! \author CooCox
 //! \copy
@@ -472,7 +472,7 @@ extern "C"
 //! \section xUART_Enable_Blocks_CoX 2. CoX Port Details 
 //! \verbatim
 //! +------------------------+----------------+------------------------+
-//! |xUART Enable Block      |       CoX      |         STM32F1xx         |
+//! |xUART Enable Block      |       CoX      |        STM32F1xx       |
 //! |------------------------|----------------|------------------------|
 //! |xUART_BLOCK_UART        |    Mandatory   |            Y           |
 //! |------------------------|----------------|------------------------|
@@ -782,9 +782,9 @@ extern "C"
 //! |------------------------|----------------|-----------|
 //! |xUARTModemStatusGet     |  Non-Mandatory |     Y     |
 //! |------------------------|----------------|-----------|
-//! |xUARTFlowControlSet     |  Non-Mandatory |     Y     |
+//! |xUARTFlowControlSet     |  Non-Mandatory |     N     |
 //! |------------------------|----------------|-----------|
-//! |xUARTFlowControlGet     |  Non-Mandatory |     Y     |
+//! |xUARTFlowControlGet     |  Non-Mandatory |     N     |
 //! |------------------------|----------------|-----------|
 //! |xUARTIrDAConfig         |  Non-Mandatory |     Y     |
 //! |------------------------|----------------|-----------|
@@ -879,7 +879,7 @@ extern "C"
 //! \return None.
 //
 //*****************************************************************************
-#define xUARTFIFOEnable(ulBase) 
+#define xUARTFIFOEnable(ulBase)                                               0
 
 //*****************************************************************************
 //
@@ -894,7 +894,7 @@ extern "C"
 //! \return None.
 //
 //*****************************************************************************
-#define xUARTFIFODisable(ulBase) 
+#define xUARTFIFODisable(ulBase)                                              0
 
 //*****************************************************************************
 //
@@ -1158,7 +1158,7 @@ extern "C"
 //!
 //! - \b xUART_OUTPUT_RTS - The Modem Control RTS signal
 //!
-//! \note It is not available on UART2.
+//! \note It is not available on UART4 and UART5.
 //!
 //! \return None.
 //
@@ -1181,7 +1181,7 @@ extern "C"
 //!
 //! - \b xUART_OUTPUT_RTS - The Modem Control RTS signal
 //!
-//! \note It is not available on UART2
+//! \note It is not available on UART4 and UART5
 //!
 //! \return None.
 //
@@ -1198,7 +1198,7 @@ extern "C"
 //! Returns the current states of each of the two UART modem control signals,
 //! DTR and RTS.
 //!
-//! \note It is not available on UART2
+//! \note It is not available on UART4 and UART5
 //!
 //! \return Returns the states of the handshake output signals.  This will be a
 //! logical logical OR combination of values \b xUART_OUTPUT_RTS 
@@ -1218,7 +1218,7 @@ extern "C"
 //! Returns the current states of each of the four UART modem status signals,
 //! RI, DCD, DSR and CTS.
 //!
-//! \note It is not available on UART2
+//! \note It is not available on UART4 and UART5
 //!
 //! \return Returns the states of the handshake output signals.  This will be a
 //! logical logical OR combination of values \b xUART_INPUT_CTS,  where the
@@ -1252,8 +1252,7 @@ extern "C"
 //! \return None.
 //
 //*****************************************************************************
-#define xUARTFlowControlSet(ulBase, ulMode)                                   \
-        UARTFlowControlSet(ulBase, ulMode)
+#define xUARTFlowControlSet(ulBase, ulMode)                                   0
 
 //*****************************************************************************
 //
@@ -1274,8 +1273,7 @@ extern "C"
 //! xUART_FLOWCONTROL_NONE will be returned.
 //
 //*****************************************************************************
-#define xUARTFlowControlGet(ulBase)                                           \
-        UARTFlowControlGet(ulBase)
+#define xUARTFlowControlGet(ulBase)                                           0
         
 //*****************************************************************************
 //
@@ -1927,7 +1925,8 @@ extern void UARTSmartCardEnable(unsigned long ulBase, unsigned long ulSCMode);
 extern void UARTSmartCardDisable(unsigned long ulBase);
 extern void UARTSynModeSet(unsigned long ulBase, unsigned long ulConfig);
 extern void UARTSYNDisable(unsigned long ulBase);
-extern void UARTModemSet(unsigned long ulBase, unsigned long ulMode);
+extern void UARTModemControlSet(unsigned long ulBase, unsigned long ulControl);
+extern void UARTModemControlClear(unsigned long ulBase, unsigned long ulControl);
 //*****************************************************************************
 //
 //! @}

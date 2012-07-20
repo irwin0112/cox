@@ -2,7 +2,7 @@
 //
 //! \file xsysctl.c
 //! \brief Driver for the system controller
-//! \version V2.1.1.0
+//! \version V2.2.1.0
 //! \date 11/20/2011
 //! \author CooCox
 //! \copy
@@ -39,15 +39,14 @@
 #include "xhw_types.h"
 #include "xhw_ints.h"
 #include "xhw_memmap.h"
+#include "xhw_config.h"
 #include "xhw_nvic.h"
 #include "xhw_sysctl.h"
 #include "xdebug.h"
 #include "xsysctl.h"
 #include "xcore.h"
 
-static unsigned long s_ulExtClockMHz = 25;
-
-#define STM32F10X_CL
+static unsigned long s_ulExtClockMHz = xHSE_VAL;
 
 //*****************************************************************************
 //
@@ -153,6 +152,13 @@ tPeripheralTable;
 
 //*****************************************************************************
 //
+// An array is RCC Callback function point
+//
+//*****************************************************************************
+static xtEventCallback g_pfnRCCHandlerCallbacks[1]={0};
+
+//*****************************************************************************
+//
 // An array that maps the peripheral base and peripheral ID and interrupt number
 // together to enablea peripheral or peripheral interrupt by a peripheral base.
 //
@@ -198,6 +204,49 @@ static const tPeripheralTable g_pPeripherals[] =
     {WWDG_BASE,        xSYSCTL_PERIPH_WDOG,    xINT_WDT},
 };
 
+//*****************************************************************************
+//
+//! \brief RCC global IRQ, declared in start up code. 
+//!
+//! \param None.
+//!
+//! This function is to give a RCC global IRQ service.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void 
+RCCIntHandler(void)
+{
+    unsigned long ulStatus;
+
+    //
+    // Clear the RCC INT Flag
+    //
+    ulStatus = xHWREG(RCC_CIR);
+
+    if (g_pfnRCCHandlerCallbacks[0] != 0)
+    {
+        g_pfnRCCHandlerCallbacks[0](0, 0, ulStatus, 0);
+    }
+}
+
+//*****************************************************************************
+//
+//! \brief Init interrupts callback for the RCC.
+//!
+//! \param xtPortCallback is callback for the RCC.
+//!
+//! This function is to init interrupts callback for RCC.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void 
+RCCIntCallbackInit(xtEventCallback pfnCallback)
+{
+    g_pfnRCCHandlerCallbacks[0] = pfnCallback;
+}
 //*****************************************************************************
 //
 //! \brief Provides a small delay.
@@ -459,7 +508,7 @@ xSysCtlPeripheralEnable2(unsigned long ulPeripheralBase)
         }
     }
 }
-        
+
 //*****************************************************************************
 //
 //! \brief Disables a peripheral.
@@ -610,8 +659,11 @@ SysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
     //
     // Reset SW, HPRE, PPRE1, PPRE2, ADCPRE and MCO bits
     //
+#if (STM32F1xx_DEVICE == STM32F10X_CL)    
     xHWREG(RCC_CFGR) &= 0xF0FF0000;
-    //xHWREG(RCC_CFGR) &= 0xF8FF0000;
+#else
+    xHWREG(RCC_CFGR) &= 0xF8FF0000;
+#endif /* STM32F10X_CL */
     
     //
     // Reset HSEON, CSSON and PLLON bits 
@@ -627,28 +679,52 @@ SysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
     // Reset PLLSRC, PLLXTPRE, PLLMUL and USBPRE/OTGFSPRE bits
     //
     xHWREG(RCC_CFGR) &= 0xFF80FFFF;
-
+    
+#if (STM32F1xx_DEVICE == STM32F10X_CL)  
     //
-    // Reset HSEBYP bit
+    // Reset PLL2ON and PLL3ON bits
     //
     xHWREG(RCC_CR) &= 0xEBFFFFFF;
     
     //
-    // Disable all interrupts and clear pending bits
+    // Disable all interrupts and clear pending bits 
     //
-    //xHWREG(RCC_CIR) &= 0x00FF0000;
-      xHWREG(RCC_CIR) = 0x00FF0000;
-    //xHWREG(RCC_CIR) |= 0x00001800;
-
-    //
-    // 
-    //
-    xHWREG(RCC_CFGR2) = 0x00000000; 
+    xHWREG(RCC_CIR) &= 0x00FF0000;
     
+    //
+    // Reset CFGR2 register
+    //
+    xHWREG(RCC_CFGR2) &= 0x00000000;
+#elif (STM32F1xx_DEVICE == STM32F10X_LD_VL || STM32F1xx_DEVICE == STM32F10X_MD_VL\
+       || STM32F1xx_DEVICE == STM32F10X_HD_VL) 
+    //
+    // Disable all interrupts and clear pending bits 
+    //
+    xHWREG(RCC_CIR) &= 0x009F0000;
+    
+    //
+    // Reset CFGR2 register
+    //
+    xHWREG(RCC_CFGR2) &= 0x00000000;
+#else
+    //
+    // Disable all interrupts and clear pending bits 
+    //
+    xHWREG(RCC_CIR) &= 0x009F0000;
+#endif // STM32F10X_CL     
+
     //
     // Calc oscillator freq
     //
-    s_ulExtClockMHz = ((ulConfig & SYSCTL_XTAL_MASK) >> 8);
+    if((((ulConfig & SYSCTL_XTAL_MASK) >> 8) >=4) && 
+       (((ulConfig & SYSCTL_XTAL_MASK) >> 8) <=25))
+    {
+        s_ulExtClockMHz = ((ulConfig & SYSCTL_XTAL_MASK) >> 8);
+    }
+    else
+    {
+        s_ulExtClockMHz = xHSE_VAL;
+    }
     switch(ulConfig & SYSCTL_OSCSRC_M)
     {
         case SYSCTL_OSC_MAIN:
@@ -656,8 +732,8 @@ SysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
         {
             xASSERT(!(ulConfig & SYSCTL_MAIN_OSC_DIS));
 
-            //xHWREG(RCC_CR) &= ~RCC_CR_HSEON;
-            //xHWREG(RCC_CR) &= ~RCC_CR_HSERDY;
+            xHWREG(RCC_CR) &= ~RCC_CR_HSEON;
+            xHWREG(RCC_CR) &= ~RCC_CR_HSERDY;
 
             xHWREG(RCC_CR) |= RCC_CR_HSEON;
 
@@ -672,41 +748,16 @@ SysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
 
             if(xtStatus == xtrue)
             {
-                //xHWREG(RCC_CFGR) &= ~RCC_CFGR_SW_M;
-                //xHWREG(RCC_CFGR) |= 1;
+                xHWREG(RCC_CFGR) &= ~RCC_CFGR_SW_M;
+                xHWREG(RCC_CFGR) |= 1;
 
-                //while((xHWREG(RCC_CFGR) & RCC_CFGR_SWS_M) != 0x04);
-                 xHWREG(FLASH_ACR) |= FLASH_ACR_PRFTBE;
-                 xHWREG(FLASH_ACR) &= ~(FLASH_ACR_LATENCY_1 | FLASH_ACR_LATENCY_2);
-                 xHWREG(FLASH_ACR) |= FLASH_ACR_LATENCY_2;
-                 
-                 xHWREG(RCC_CFGR) |= 0x00000400;
-                 
-                 xHWREG(RCC_CFGR2) &=~(0x000000F0 | 0x00000F00 | 0x0000000F |0x00010000);
-                 xHWREG(RCC_CFGR2) |= 0x00000040 | 0x00000600 | 0x00010000 | 0x00000004;
-                 
-                 xHWREG(RCC_CR) |= RCC_CR_PLL2ON;
-                 while((xHWREG(RCC_CR) & RCC_CR_PLL2RDY) == 0)
-                 {
-                 }
-                 
-                 xHWREG(RCC_CFGR) &=~(0x00020000 | 0x00010000 |0x003C0000);
-                 xHWREG(RCC_CFGR) |= 0x00000000| 0x00010000 | 0x001C0000;
-                 
-                 xHWREG(RCC_CR) |= RCC_CR_PLLON;
-                 while((xHWREG(RCC_CR) & RCC_CR_PLLRDY) == 0)
-                 {
-                 }
-                 xHWREG(RCC_CFGR) &= ~RCC_CFGR_SW_M;
-                 xHWREG(RCC_CFGR) |= 0x02;
-                 while((xHWREG(RCC_CFGR) & RCC_CFGR_SWS_M) != 0x08);
-                                               
+                while((xHWREG(RCC_CFGR) & RCC_CFGR_SWS_M) != 0x04);
             }
             else
             {
                 while(1);
             }
-            /*
+            
             ulOscFreq = s_ulExtClockMHz*1000000; 
             
             if((ulConfig & SYSCTL_INT_OSC_DIS)!=0)
@@ -717,7 +768,7 @@ SysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
             {
                 //xHWREG(RCC_CR) |= RCC_CR_PLLON;
                 xHWREG(RCC_CR) &= ~RCC_CR_PLLON;
-            }*/
+            }
             break;
         }
         case SYSCTL_OSC_INT:
@@ -756,8 +807,8 @@ SysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
     //
     //Enable prefetch Buffer 
     //
-    //xHWREG(FLASH_ACR) |= FLASH_ACR_PRFTBS;       
-    /*
+    xHWREG(FLASH_ACR) |= FLASH_ACR_PRFTBS;       
+    
     if (ulSysClk <= 24000000)
     {
         //
@@ -865,9 +916,8 @@ SysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
         while((xHWREG(RCC_CFGR) & RCC_CFGR_SWS_M) != 0x08);
 
         return;
-    }*/
+    }
 }
-
 
 //*****************************************************************************
 //
@@ -1119,10 +1169,11 @@ SysCtlLSEConfig(unsigned long ulLSEConfig)
 //
 //*****************************************************************************
 void
-SysCtlPeripheralClockSourceSet(unsigned long ulPeripheralSrc)
+SysCtlPeripheralClockSourceSet(unsigned long ulPeripheralSrc, unsigned long ulDivide)
 {
- //
-    // Check the arguments.
+    unsigned long ulTemp = 0;
+    //
+    // Check the arguments. 
     //
     xASSERT((ulPeripheralSrc==SYSCTL_RTC_LSE)||
             (ulPeripheralSrc==SYSCTL_RTC_LSI)||
@@ -1134,26 +1185,53 @@ SysCtlPeripheralClockSourceSet(unsigned long ulPeripheralSrc)
             (ulPeripheralSrc==SYSCTL_MCO_PLL3_2)||
             (ulPeripheralSrc==SYSCTL_MCO_XT1)||
             (ulPeripheralSrc==SYSCTL_MCO_PLL3)||
+            (ulPeripheralSrc==SYSCTL_ADC_HCLK)||
+            (ulPeripheralSrc==SYSCTL_IWDG_LSI)||
             (ulPeripheralSrc==SYSCTL_I2S3_SYSCLK)||
             (ulPeripheralSrc==SYSCTL_I2S3_PLL3)||
             (ulPeripheralSrc==SYSCTL_I2S2_SYSCLK)||
-            (ulPeripheralSrc==SYSCTL_I2S2_PLL3)|||
+            (ulPeripheralSrc==SYSCTL_I2S2_PLL3)||
+            (ulPeripheralSrc==xSYSCTL_WDT_HCLK)||
             (ulPeripheralSrc==SYSCTL_MCO_PLL2)         
            );
     if(SYSCTL_PERIPH_INDEX_CLK(ulPeripheralSrc) == 1)
     {
         xHWREG(RCC_BDCR) &= ~(RCC_BDCR_RTCSEL_M);
+        xHWREG(g_pulCLKSELRegs[SYSCTL_PERIPH_INDEX_CLK(ulPeripheralSrc)]) |=
+        SYSCTL_PERIPH_ENUM_CLK(ulPeripheralSrc);
     }
     else if(SYSCTL_PERIPH_INDEX_CLK(ulPeripheralSrc) == 0)
     {
         xHWREG(RCC_CFGR) &= ~(RCC_CFGR_MCO_M);
+        xHWREG(g_pulCLKSELRegs[SYSCTL_PERIPH_INDEX_CLK(ulPeripheralSrc)]) |=
+        SYSCTL_PERIPH_ENUM_CLK(ulPeripheralSrc);
     }
     else if(SYSCTL_PERIPH_INDEX_CLK(ulPeripheralSrc) == 2)
     {
         xHWREG(RCC_CFGR2) &= ~(SYSCTL_PERIPH_ENUM_CLK(ulPeripheralSrc | 1));
-    }
-    xHWREG(g_pulCLKSELRegs[SYSCTL_PERIPH_INDEX_CLK(ulPeripheralSrc)]) |=
+        xHWREG(g_pulCLKSELRegs[SYSCTL_PERIPH_INDEX_CLK(ulPeripheralSrc)]) |=
         SYSCTL_PERIPH_ENUM_CLK(ulPeripheralSrc);
+    }
+    else if(ulPeripheralSrc==SYSCTL_IWDG_LSI)
+    {
+        xHWREG(RCC_CSR) |= RCC_CSR_LSION;
+    }
+    else if(ulPeripheralSrc==SYSCTL_ADC_HCLK)
+    {
+        for(ulTemp=0; ulTemp<8; ulTemp++)
+        {
+            if(ulDivide == (1 << ulTemp))
+                break;
+        }
+        xHWREG(RCC_CFGR) &= ~RCC_CFGR_ADCPRE_M;
+        xHWREG(RCC_CFGR) |= (ulTemp << RCC_CFGR_ADCPRE_S);
+    }
+    else
+    {
+        xHWREG(g_pulCLKSELRegs[SYSCTL_PERIPH_INDEX_CLK(ulPeripheralSrc)]) |=
+        SYSCTL_PERIPH_ENUM_CLK(ulPeripheralSrc);
+    }
+
 }
 
 //*****************************************************************************
@@ -1247,12 +1325,13 @@ SysCtlHClockGet(void)
     //
     // STM32F10X_CL
     //
-#ifdef  STM32F10X_CL
+#if (STM32F1xx_DEVICE == STM32F10X_CL)
     unsigned long ulPrediv1Source = 0, ulPrediv1Factor = 0, ulPrediv2Factor = 0, 
                   ulPll2Mull = 0;
 #endif 
 
-#if defined (STM32F10X_LD_VL) || defined (STM32F10X_MD_VL) || defined (STM32F10X_HD_VL)
+#if (STM32F1xx_DEVICE == STM32F10X_LD_VL || STM32F1xx_DEVICE == STM32F10X_MD_VL\
+     || STM32F1xx_DEVICE == STM32F10X_HD_VL)
     unsigned long ulPrediv1Factor = 0;
 #endif
     
@@ -1289,7 +1368,7 @@ SysCtlHClockGet(void)
             ulPllMull = xHWREG(RCC_CFGR) & RCC_CFGR_PLLMUL_M;
             ulPllSource = xHWREG(RCC_CFGR) & RCC_CFGR_PLLSRC;
                   
-#ifndef STM32F10X_CL      
+#if (STM32F1xx_DEVICE != STM32F10X_CL)      
             ulPllMull = ( ulPllMull >> 18) + 2;
       
             if (ulPllSource == 0x00)
@@ -1301,13 +1380,14 @@ SysCtlHClockGet(void)
             }
             else
             {
- #if defined (STM32F10X_LD_VL) || defined (STM32F10X_MD_VL) || defined (STM32F10X_HD_VL)
+#if (STM32F1xx_DEVICE == STM32F10X_LD_VL || STM32F1xx_DEVICE == STM32F10X_MD_VL\
+     || STM32F1xx_DEVICE == STM32F10X_HD_VL)
                 ulPrediv1Factor = (xHWREG(RCC_CFGR2) & RCC_CFGR2_PREDIV1_M) + 1;
                 //
                 // HSE oscillator clock selected as PREDIV1 clock entry 
                 //
                 ulHclk = (s_ulExtClockMHz*1000000 / ulPrediv1Factor) * ulPllMull; 
- #else
+#else
                 //
                 // HSE selected as PLL clock entry 
                 //
@@ -1322,7 +1402,7 @@ SysCtlHClockGet(void)
                 {
                     ulHclk = s_ulExtClockMHz*1000000 * ulPllMull;
                 }
- #endif
+#endif
             }
 #else
             ulPllMull = ulPllMull >> 18;

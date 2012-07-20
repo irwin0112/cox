@@ -3,7 +3,7 @@
 //! \file xgpio.h
 //! \brief Prototypes for the GPIO Driver.
 //! \brief Prototypes for the AFIO Driver.
-//! \version V2.1.1.0
+//! \version V2.2.1.0
 //! \date 11/20/2011
 //! \author CooCox
 //! \copy
@@ -70,36 +70,6 @@ extern "C"
 //
 //! \addtogroup xGPIO
 //! @{
-//
-//*****************************************************************************
-
-//*****************************************************************************
-//
-//! \addtogroup xGPIO_Config xGPIO intrerrupt number config
-//! 
-//! \section xGPIO_Config_section 1. Where to use this group
-//! This is use to config xGPIO intrerrupt number.
-//! 
-//! \section xGPIO_Config_CoX 2.CoX Port Details 
-//! \verbatim
-//! +------------------------+----------------+------------------------+
-//! |xGPIO General Pin ID    |       CoX      |         STM32F1xx      |
-//! |------------------------|----------------|------------------------|
-//! |xGPIO_INT_NUMBER        |    Mandatory   |   xGPIO_INT_NUMBER     |
-//! +------------------------+----------------+------------------------+
-//! \endverbatim
-//! @{
-//
-//*****************************************************************************
-
-//
-//! xGPIO intrerrupt number config
-//
-#define xGPIO_INT_NUMBER        8  
-
-//*****************************************************************************
-//
-//! @}
 //
 //*****************************************************************************
 
@@ -3580,5 +3550,4 @@ extern unsigned long  GPIOPinToPin(unsigned long ulPort,
 #endif
 
 #endif //  __xGPIO_H__
-
 

@@ -508,12 +508,14 @@
 //
 //! Selects the clock speed of ADC is 6.5 MHz typ
 //
-#define STMPE811_ADC_CTRL2_CLK13 0x2
+#define STMPE811_ADC_CTRL2_CLK13                                               \
+                                0x2
 
 //
 //! Selects the clock speed of ADC is 6.5 MHz typ
 //
-#define STMPE811_ADC_CTRL2_CLK4 0x3
+#define STMPE811_ADC_CTRL2_CLK4                                                \
+                                0x3
 //*****************************************************************************
 //
 //! @}

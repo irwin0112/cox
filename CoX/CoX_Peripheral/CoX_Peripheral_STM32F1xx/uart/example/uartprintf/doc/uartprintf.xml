@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<Example>
+  <Name>uartprintf</Name>
+  <Description>Use UART0 to print some characters to terminal.Step 1: You should 
+    set system clock and enable the uart. Step 2: You should set multiplex GPIO 
+    and UART clock source. Step 3: You should configure UART. Step 4: You should
+    send data to FIFO.
+  </Description>
+  <Version>1.0.0</Version>
+  <Tags>UART</Tags>
+  <EVKit>STM32F1xx Development Board</EVKit>
+  
+  <Files>
+    <File>$REPO_ROOT$\CoX\CoX_Peripheral\CoX_Peripheral_STM32F1xx\uart\example\uartprintf\src\UartPrintf.c</File>
+  </Files>
+  
+  <Dependencys>
+    <Dependency>COX.Peripheral.STM32F1xx.xStartup</Dependency>
+    <Dependency>COX.Peripheral.STM32F1xx.xLowLayer</Dependency>
+	<Dependency>COX.Peripheral.STM32F1xx.xCORE</Dependency>
+	<Dependency>COX.Peripheral.STM32F1xx.xSysCtl</Dependency>
+	<Dependency>COX.Peripheral.STM32F1xx.xGPIO</Dependency>
+  </Dependencys>
+
+</Example>
